@@ -108,14 +108,32 @@ export async function updateSiteSettings(formData: FormData) {
   const hero_title = formData.get('hero_title') as string
   const hero_focus_title = formData.get('hero_focus_title') as string
   const hero_focus = formData.get('hero_focus') as string
-  const github_url = formData.get('github_url') as string
-  const linkedin_url = formData.get('linkedin_url') as string
   
   const { error } = await supabase.from('site_settings').upsert([
-    { lang, hero_name, hero_title, hero_focus_title, hero_focus, github_url, linkedin_url }
+    { lang, hero_name, hero_title, hero_focus_title, hero_focus }
   ], { onConflict: 'lang' })
   
   if (error) throw new Error('Supabase Settings Error: ' + error.message)
+  revalidatePath('/', 'layout')
+}
+
+export async function addSocialLink(formData: FormData) {
+  const supabase = await createClient()
+  const lang = formData.get('lang') as string
+  const platform = formData.get('platform') as string
+  const url = formData.get('url') as string
+  
+  const { error } = await supabase.from('social_links').insert([{ lang, platform, url }])
+  if (error) throw new Error('Supabase Social Link Error: ' + error.message)
+  revalidatePath('/', 'layout')
+}
+
+export async function deleteSocialLink(formData: FormData) {
+  const supabase = await createClient()
+  const id = formData.get('id') as string
+  const lang = formData.get('lang') as string
+  const { error } = await supabase.from('social_links').delete().eq('id', id)
+  if (error) throw new Error('Supabase Delete Social Link Error: ' + error.message)
   revalidatePath('/', 'layout')
 }
 

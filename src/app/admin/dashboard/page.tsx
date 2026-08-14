@@ -1,4 +1,4 @@
-import { createPost, uploadCV, uploadBackground, updateSiteSettings, addExperience, addProject, deleteExperience, deleteProject, deletePost } from '../actions'
+import { createPost, uploadCV, uploadBackground, updateSiteSettings, addExperience, addProject, deleteExperience, deleteProject, deletePost, addSocialLink, deleteSocialLink } from '../actions'
 import { createClient } from '@/utils/supabase/server'
 import { Trash2 } from 'lucide-react'
 
@@ -9,6 +9,7 @@ export default async function DashboardPage() {
   const { data: experiences } = await supabase.from('experiences').select('*').order('created_at', { ascending: false })
   const { data: projects } = await supabase.from('projects').select('*').order('created_at', { ascending: false })
   const { data: posts } = await supabase.from('posts').select('*').order('created_at', { ascending: false })
+  const { data: socialLinks } = await supabase.from('social_links').select('*').order('id', { ascending: true })
 
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-12">
@@ -48,19 +49,65 @@ export default async function DashboardPage() {
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Focus Description</label>
               <textarea name="hero_focus" required rows={3} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200"></textarea>
             </div>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">GitHub URL</label>
-              <input name="github_url" type="url" placeholder="https://github.com/..." className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">LinkedIn URL</label>
-              <input name="linkedin_url" type="url" placeholder="https://linkedin.com/in/..." className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
-            </div>
           </div>
           <button type="submit" className="bg-neutral-200 text-neutral-900 font-bold py-2 px-6 rounded hover:bg-white transition-colors">
             Save Settings
           </button>
         </form>
+      </section>
+
+      {/* Social Links Manager */}
+      <section className="bg-neutral-900 p-8 rounded-2xl border border-neutral-800 shadow-xl">
+        <h2 className="text-xl font-bold text-neutral-200 mb-6 flex items-center gap-3">
+          <span className="w-6 h-px bg-neutral-700"></span>
+          Social & External Links
+        </h2>
+        <form action={addSocialLink} className="space-y-5 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Language</label>
+              <select name="lang" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200">
+                <option value="en">English (en)</option>
+                <option value="tr">Türkçe (tr)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Platform Name</label>
+              <input name="platform" type="text" placeholder="e.g. GitHub, Twitter, Blog" required className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">URL</label>
+              <input name="url" type="url" placeholder="https://..." required className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
+            </div>
+          </div>
+          <button type="submit" className="bg-neutral-200 text-neutral-900 font-bold py-2 px-6 rounded hover:bg-white transition-colors">
+            Add Link
+          </button>
+        </form>
+
+        {socialLinks && socialLinks.length > 0 && (
+          <div className="space-y-3 border-t border-neutral-800 pt-6">
+            <h3 className="text-sm font-bold text-neutral-400 mb-4 uppercase tracking-wider">Existing Links</h3>
+            {socialLinks.map((link) => (
+              <div key={link.id} className="flex items-center justify-between bg-neutral-950 p-4 rounded-lg border border-neutral-800">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold bg-neutral-800 px-2 py-0.5 rounded text-neutral-300">{link.lang}</span>
+                    <strong className="text-neutral-200">{link.platform}</strong>
+                  </div>
+                  <div className="text-sm text-neutral-500 mt-1 truncate max-w-sm">{link.url}</div>
+                </div>
+                <form action={deleteSocialLink}>
+                  <input type="hidden" name="id" value={link.id} />
+                  <input type="hidden" name="lang" value={link.lang} />
+                  <button type="submit" className="p-2 text-red-400 hover:bg-red-400/10 rounded transition-colors" aria-label="Delete">
+                    <Trash2 size={18} />
+                  </button>
+                </form>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Experience Manager */}
