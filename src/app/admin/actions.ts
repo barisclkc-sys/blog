@@ -34,8 +34,7 @@ export async function createPost(formData: FormData) {
   ])
 
   if (error) {
-    console.error('Error inserting post:', error)
-    return
+    throw new Error('Supabase Posts Error: ' + error.message)
   }
 
   revalidatePath('/en')
@@ -46,7 +45,8 @@ export async function deletePost(formData: FormData) {
   const supabase = await createClient()
   const id = formData.get('id') as string
   const lang = formData.get('lang') as string || 'en'
-  await supabase.from('posts').delete().eq('id', id)
+  const { error } = await supabase.from('posts').delete().eq('id', id)
+  if (error) throw new Error('Supabase Delete Post Error: ' + error.message)
   revalidatePath(`/${lang}`)
 }
 
@@ -69,8 +69,7 @@ export async function uploadCV(formData: FormData) {
     })
 
   if (error) {
-    console.error('Error uploading CV:', error)
-    return
+    throw new Error('Supabase CV Upload Error: ' + error.message)
   }
 }
 
@@ -93,13 +92,11 @@ export async function uploadBackground(formData: FormData) {
     })
 
   if (error) {
-    console.error('Error uploading background:', error)
-    return
+    throw new Error('Supabase Background Upload Error: ' + error.message)
   }
   
   // Refresh layout pages to apply new background
-  revalidatePath('/en', 'layout')
-  revalidatePath('/tr', 'layout')
+  revalidatePath('/', 'layout')
 }
 
 // --- CMS Actions ---
@@ -111,13 +108,15 @@ export async function updateSiteSettings(formData: FormData) {
   const hero_title = formData.get('hero_title') as string
   const hero_focus_title = formData.get('hero_focus_title') as string
   const hero_focus = formData.get('hero_focus') as string
+  const github_url = formData.get('github_url') as string
+  const linkedin_url = formData.get('linkedin_url') as string
   
   const { error } = await supabase.from('site_settings').upsert([
-    { lang, hero_name, hero_title, hero_focus_title, hero_focus }
+    { lang, hero_name, hero_title, hero_focus_title, hero_focus, github_url, linkedin_url }
   ], { onConflict: 'lang' })
   
-  if (error) console.error('Error updating site settings:', error)
-  revalidatePath(`/${lang}`)
+  if (error) throw new Error('Supabase Settings Error: ' + error.message)
+  revalidatePath('/', 'layout')
 }
 
 export async function addExperience(formData: FormData) {
@@ -128,7 +127,7 @@ export async function addExperience(formData: FormData) {
   const description = formData.get('description') as string
   
   const { error } = await supabase.from('experiences').insert([{ lang, company, role, description }])
-  if (error) console.error('Error adding experience:', error)
+  if (error) throw new Error('Supabase Experience Error: ' + error.message)
   revalidatePath(`/${lang}`)
 }
 
@@ -136,7 +135,8 @@ export async function deleteExperience(formData: FormData) {
   const supabase = await createClient()
   const id = formData.get('id') as string
   const lang = formData.get('lang') as string
-  await supabase.from('experiences').delete().eq('id', id)
+  const { error } = await supabase.from('experiences').delete().eq('id', id)
+  if (error) throw new Error('Supabase Delete Exp Error: ' + error.message)
   revalidatePath(`/${lang}`)
 }
 
@@ -149,7 +149,7 @@ export async function addProject(formData: FormData) {
   const techArray = technologies.split(',').map(t => t.trim())
   
   const { error } = await supabase.from('projects').insert([{ lang, name, technologies: techArray }])
-  if (error) console.error('Error adding project:', error)
+  if (error) throw new Error('Supabase Project Error: ' + error.message)
   revalidatePath(`/${lang}`)
 }
 
@@ -157,7 +157,8 @@ export async function deleteProject(formData: FormData) {
   const supabase = await createClient()
   const id = formData.get('id') as string
   const lang = formData.get('lang') as string
-  await supabase.from('projects').delete().eq('id', id)
+  const { error } = await supabase.from('projects').delete().eq('id', id)
+  if (error) throw new Error('Supabase Delete Project Error: ' + error.message)
   revalidatePath(`/${lang}`)
 }
 

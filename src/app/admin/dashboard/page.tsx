@@ -48,6 +48,14 @@ export default async function DashboardPage() {
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Focus Description</label>
               <textarea name="hero_focus" required rows={3} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200"></textarea>
             </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">GitHub URL</label>
+              <input name="github_url" type="url" placeholder="https://github.com/..." className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">LinkedIn URL</label>
+              <input name="linkedin_url" type="url" placeholder="https://linkedin.com/in/..." className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
+            </div>
           </div>
           <button type="submit" className="bg-neutral-200 text-neutral-900 font-bold py-2 px-6 rounded hover:bg-white transition-colors">
             Save Settings
