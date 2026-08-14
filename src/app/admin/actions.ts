@@ -42,6 +42,14 @@ export async function createPost(formData: FormData) {
   revalidatePath('/tr')
 }
 
+export async function deletePost(formData: FormData) {
+  const supabase = await createClient()
+  const id = formData.get('id') as string
+  const lang = formData.get('lang') as string || 'en'
+  await supabase.from('posts').delete().eq('id', id)
+  revalidatePath(`/${lang}`)
+}
+
 export async function uploadCV(formData: FormData) {
   const supabase = await createClient()
   const file = formData.get('file') as File
