@@ -49,6 +49,21 @@ export default async function DashboardPage() {
               <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Focus Description</label>
               <textarea name="hero_focus" required rows={3} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200"></textarea>
             </div>
+            <div className="md:col-span-2 pt-4 border-t border-neutral-800">
+              <h3 className="text-sm font-bold text-neutral-400 mb-4 uppercase tracking-wider">SEO & Contact</h3>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">SEO Title</label>
+              <input name="seo_title" type="text" placeholder="Barış Çolakça - Portfolio" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Contact Email</label>
+              <input name="contact_email" type="email" placeholder="hello@baris.com" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">SEO Description (Meta)</label>
+              <textarea name="seo_description" rows={2} placeholder="Brief description for Google & Social Media sharing..." className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-neutral-200"></textarea>
+            </div>
           </div>
           <button type="submit" className="bg-neutral-200 text-neutral-900 font-bold py-2 px-6 rounded hover:bg-white transition-colors">
             Save Settings

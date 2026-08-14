@@ -2,6 +2,7 @@ import { supabaseStatic } from '@/utils/supabase/static';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import rehypePrettyCode from 'rehype-pretty-code';
 
 export const revalidate = 60;
 
@@ -51,7 +52,14 @@ export default async function BlogPostPage(props: {
         </header>
 
         <div className="prose prose-neutral dark:prose-invert prose-lg max-w-none">
-          <MDXRemote source={post.content} />
+          <MDXRemote 
+            source={post.content} 
+            options={{
+              mdxOptions: {
+                rehypePlugins: [[rehypePrettyCode, { theme: 'one-dark-pro' }]],
+              }
+            }}
+          />
         </div>
       </article>
     </div>

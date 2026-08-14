@@ -4,7 +4,9 @@ import "../globals.css";
 import Navbar from "@/components/Navbar";
 import { getDictionary } from "@/dictionaries";
 import Link from "next/link";
+import Image from "next/image";
 import { supabaseStatic } from "@/utils/supabase/static";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,10 +18,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Barış Çolakça - Portfolio",
-  description: "Senior Electrical & Electronics Engineering Student @ METU",
-};
+export async function generateMetadata(
+  props: { params: Promise<{ lang: string }> }
+): Promise<Metadata> {
+  const params = await props.params;
+  const { data: siteSettings } = await supabaseStatic.from('site_settings').select('*').eq('lang', params.lang).maybeSingle();
+  
+  const title = siteSettings?.seo_title || "Barış Çolakça - Portfolio";
+  const description = siteSettings?.seo_description || "Senior Electrical & Electronics Engineering Student @ METU | Developer";
+  const ogImageUrl = supabaseStatic.storage.from('public-assets').getPublicUrl('background.jpg').data.publicUrl;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [ogImageUrl],
+    }
+  };
+}
 
 export async function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'tr' }];
@@ -44,6 +62,7 @@ export default async function RootLayout(props: {
   // Fetch dynamic social links
   const { data: socialLinksData } = await supabaseStatic.from('social_links').select('*').eq('lang', params.lang).order('id', { ascending: true });
   const socialLinks = socialLinksData || [];
+  const contactEmail = siteSettings?.contact_email;
 
   const { data: cvData } = supabaseStatic.storage
     .from('public-assets')
@@ -74,11 +93,17 @@ export default async function RootLayout(props: {
     >
       <body className="min-h-screen bg-[#0a0a0a] text-neutral-300 font-sans selection:bg-neutral-800 selection:text-neutral-100 relative">
           
-          {/* Background Image Layer */}
-          <div 
-            className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat opacity-15"
-            style={{ backgroundImage: `url(${bgUrl})` }}
-          />
+          {/* Background Image Layer using next/image for extreme performance */}
+          {bgUrl && (
+            <Image
+              src={bgUrl}
+              alt="Background"
+              fill
+              priority
+              quality={80}
+              className="object-cover opacity-15 -z-20"
+            />
+          )}
           
           {/* Fixed Top Left Navigation */}
           <div className="fixed top-6 left-6 z-50 flex items-center gap-4">
@@ -129,6 +154,11 @@ export default async function RootLayout(props: {
                 
                 {/* Social Links Bottom Bar */}
                 <div className="mt-12 flex items-center flex-wrap gap-5 lg:mt-0">
+                  {contactEmail && (
+                    <a href={`mailto:${contactEmail}`} title="Email Me" className="text-neutral-500 hover:text-neutral-200 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </a>
+                  )}
                   {socialLinks.map((link) => {
                     const p = link.platform.toLowerCase();
                     let Icon;
@@ -163,6 +193,7 @@ export default async function RootLayout(props: {
 
             </div>
           </div>
+          <Analytics />
       </body>
     </html>
   );

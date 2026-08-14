@@ -108,9 +108,12 @@ export async function updateSiteSettings(formData: FormData) {
   const hero_title = formData.get('hero_title') as string
   const hero_focus_title = formData.get('hero_focus_title') as string
   const hero_focus = formData.get('hero_focus') as string
+  const seo_title = formData.get('seo_title') as string
+  const seo_description = formData.get('seo_description') as string
+  const contact_email = formData.get('contact_email') as string
   
   const { error } = await supabase.from('site_settings').upsert([
-    { lang, hero_name, hero_title, hero_focus_title, hero_focus }
+    { lang, hero_name, hero_title, hero_focus_title, hero_focus, seo_title, seo_description, contact_email }
   ], { onConflict: 'lang' })
   
   if (error) throw new Error('Supabase Settings Error: ' + error.message)
