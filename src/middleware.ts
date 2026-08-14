@@ -13,8 +13,14 @@ function getLocale(request: NextRequest): string {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // --- Admin Route Protection (Supabase Auth) ---
   if (pathname.startsWith('/admin')) {
+    // If exactly /admin, redirect to dashboard
+    if (pathname === '/admin') {
+      const dashboardUrl = request.nextUrl.clone();
+      dashboardUrl.pathname = '/admin/dashboard';
+      return NextResponse.redirect(dashboardUrl);
+    }
+
     const { supabaseResponse, user } = await updateSession(request);
     
     // Redirect if not logged in and trying to access protected admin page
