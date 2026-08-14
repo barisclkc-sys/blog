@@ -4,7 +4,6 @@ import "../globals.css";
 import Navbar from "@/components/Navbar";
 import { getDictionary } from "@/dictionaries";
 import Link from "next/link";
-import Image from "next/image";
 import { supabaseStatic } from "@/utils/supabase/static";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -93,17 +92,11 @@ export default async function RootLayout(props: {
     >
       <body className="min-h-screen bg-[#0a0a0a] text-neutral-300 font-sans selection:bg-neutral-800 selection:text-neutral-100 relative">
           
-          {/* Background Image Layer using next/image for extreme performance */}
-          {bgUrl && (
-            <Image
-              src={bgUrl}
-              alt="Background"
-              fill
-              priority
-              quality={80}
-              className="object-cover opacity-15 -z-20"
-            />
-          )}
+          {/* Background Image Layer */}
+          <div 
+            className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat opacity-15"
+            style={{ backgroundImage: `url(${bgUrl})` }}
+          />
           
           {/* Fixed Top Left Navigation */}
           <div className="fixed top-6 left-6 z-50 flex items-center gap-4">
