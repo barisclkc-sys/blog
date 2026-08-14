@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "name": "Barış Çolakça",
+    "title": "ODTÜ Elektrik ve Elektronik Mühendisliği Son Sınıf Öğrencisi",
+    "techFocusTitle": "Teknik Odak",
+    "techFocus": "Güç Sistemleri, Gömülü Sistemler, Uç Yapay Zeka (Edge AI)"
+  },
+  "experience": {
+    "title": "Deneyim",
+    "jobs": [
+      {
+        "company": "TÜBİTAK Uzay Teknolojileri Araştırma Enstitüsü",
+        "role": "Uzun Dönem Stajyer",
+        "description": "Donanım/Yazılım Entegrasyonu, Otomatik Hata Yönetimi"
+      },
+      {
+        "company": "Schneider Electric",
+        "role": "Stajyer",
+        "description": "KGK (UPS) Sistemleri, Kritik Güç"
+      }
+    ]
+  },
+  "projects": {
+    "title": "Projeler",
+    "items": [
+      {
+        "name": "Uç Yapay Zeka Toplantı Asistanı",
+        "technologies": ["Tamamen Çevrimdışı", "C++", "Whisper", "LLM", "Bash"]
+      }
+    ]
+  }
+}

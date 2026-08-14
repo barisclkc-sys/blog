@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "name": "Barış Çolakça",
+    "title": "Senior Electrical & Electronics Engineering Student @ METU",
+    "techFocusTitle": "Technical Focus",
+    "techFocus": "Power Systems, Embedded Systems, Edge AI"
+  },
+  "experience": {
+    "title": "Experience",
+    "jobs": [
+      {
+        "company": "TÜBİTAK Space Technologies Institute",
+        "role": "Long-Term Intern",
+        "description": "Hardware/Software Integration, Automated Error Handling"
+      },
+      {
+        "company": "Schneider Electric",
+        "role": "Intern",
+        "description": "UPS Systems, Critical Power"
+      }
+    ]
+  },
+  "projects": {
+    "title": "Projects",
+    "items": [
+      {
+        "name": "Edge AI Meeting Assistant",
+        "technologies": ["Fully Offline", "C++", "Whisper", "LLM", "Bash"]
+      }
+    ]
+  }
+}
