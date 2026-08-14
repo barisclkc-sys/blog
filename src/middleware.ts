@@ -6,12 +6,7 @@ const locales = ['en', 'tr'];
 const defaultLocale = 'en';
 
 function getLocale(request: NextRequest): string {
-  const acceptLanguage = request.headers.get('accept-language');
-  if (!acceptLanguage) return defaultLocale;
-
-  if (acceptLanguage.toLowerCase().includes('tr')) {
-    return 'tr';
-  }
+  // Always default to English as requested by user
   return defaultLocale;
 }
 

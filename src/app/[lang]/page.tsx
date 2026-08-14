@@ -1,7 +1,6 @@
 import { getDictionary } from "@/dictionaries";
 import { supabaseStatic } from '@/utils/supabase/static';
 
-// ISR (Incremental Static Regeneration): Sayfayı arka planda her 60 saniyede bir yeniler
 export const revalidate = 60;
 
 export default async function Home(props: {
@@ -10,47 +9,60 @@ export default async function Home(props: {
   const params = await props.params;
   const dict = await getDictionary(params.lang);
 
-  // Supabase'den blog yazılarını (posts) çek (ISR mekanizmasını bozmamak için static client kullanıyoruz)
-  const { data: posts } = await supabaseStatic
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // Fetch all CMS data from Supabase
+  const [postsRes, settingsRes, expRes, projRes] = await Promise.all([
+    supabaseStatic.from('posts').select('*').order('created_at', { ascending: false }),
+    supabaseStatic.from('site_settings').select('*').eq('lang', params.lang).maybeSingle(),
+    supabaseStatic.from('experiences').select('*').eq('lang', params.lang).order('id', { ascending: true }),
+    supabaseStatic.from('projects').select('*').eq('lang', params.lang).order('id', { ascending: true })
+  ]);
+
+  const posts = postsRes.data || [];
+  const siteSettings = settingsRes.data;
+  const experiences = expRes.data && expRes.data.length > 0 ? expRes.data : dict.experience.jobs;
+  const projects = projRes.data && projRes.data.length > 0 ? projRes.data : dict.projects.items;
+
+  // Fallbacks if CMS is empty
+  const heroName = siteSettings?.hero_name || dict.hero.name;
+  const heroTitle = siteSettings?.hero_title || dict.hero.title;
+  const heroFocusTitle = siteSettings?.hero_focus_title || dict.hero.techFocusTitle;
+  const heroFocus = siteSettings?.hero_focus || dict.hero.techFocus;
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-24">
       
       {/* Hero Card */}
-      <section className="bg-neutral-800/40 rounded-2xl p-8 border border-neutral-700/30 shadow-lg">
-        <h1 className="text-neutral-100 text-2xl sm:text-3xl font-bold tracking-tight mb-2">
-          {dict.hero.name}
+      <section className="glass-panel hover-glow transition-all duration-500 rounded-3xl p-10 shadow-2xl">
+        <h1 className="text-neutral-100 text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
+          {heroName}
         </h1>
-        <p className="text-neutral-300 text-lg mb-8 font-medium leading-snug">
-          {dict.hero.title}
+        <p className="text-neutral-300 text-lg sm:text-xl mb-10 font-medium leading-relaxed">
+          {heroTitle}
         </p>
         
-        <div className="flex flex-col gap-3 border-t border-neutral-700/50 pt-6">
-          <span className="text-neutral-400 text-xs font-bold uppercase tracking-widest">
-            {dict.hero.techFocusTitle}
+        <div className="flex flex-col gap-4 border-t border-white/5 pt-8">
+          <span className="text-neutral-400 text-[11px] font-bold uppercase tracking-[0.2em]">
+            {heroFocusTitle}
           </span>
-          <p className="text-neutral-200 leading-relaxed font-medium">
-            {dict.hero.techFocus}
+          <p className="text-neutral-200 leading-relaxed font-light text-sm sm:text-base">
+            {heroFocus}
           </p>
         </div>
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="scroll-mt-24">
-        <h2 className="text-neutral-100 text-xl font-bold tracking-tight mb-6 flex items-center gap-4">
-          <span className="w-8 h-px bg-neutral-600"></span>
+      <section id="experience" className="scroll-mt-32">
+        <h2 className="text-neutral-100 text-2xl font-bold tracking-tight mb-8 flex items-center gap-6">
+          <span className="w-12 h-[2px] bg-neutral-800"></span>
           {dict.experience.title}
         </h2>
         
-        <div className="space-y-4">
-          {dict.experience.jobs.map((job: { company: string; role: string; description: string }, index: number) => (
-            <div key={index} className="group bg-neutral-800/30 hover:bg-neutral-800/60 transition-all rounded-2xl p-6 border border-neutral-700/30">
-              <h3 className="text-neutral-100 font-semibold text-lg">{job.company}</h3>
-              <p className="text-neutral-400 text-sm font-medium mb-4">{job.role}</p>
-              <p className="text-neutral-300 text-sm leading-relaxed">
+        <div className="space-y-6">
+          {experiences.map((job: any, index: number) => (
+            <div key={index} className="group glass-panel hover-glow transition-all duration-300 rounded-2xl p-8">
+              <h3 className="text-neutral-100 font-bold text-lg tracking-tight">{job.company}</h3>
+              <p className="text-neutral-400 text-sm font-medium mb-5 mt-1">{job.role}</p>
+              <p className="text-neutral-300 text-sm leading-relaxed font-light">
                 {job.description}
               </p>
             </div>
@@ -59,47 +71,49 @@ export default async function Home(props: {
       </section>
       
       {/* Supabase Dynamic Posts Section */}
-      <section id="blog" className="scroll-mt-24">
-        <h2 className="text-neutral-100 text-xl font-bold tracking-tight mb-6 flex items-center gap-4">
-          <span className="w-8 h-px bg-neutral-600"></span>
+      <section id="blog" className="scroll-mt-32">
+        <h2 className="text-neutral-100 text-2xl font-bold tracking-tight mb-8 flex items-center gap-6">
+          <span className="w-12 h-[2px] bg-neutral-800"></span>
           {params.lang === 'tr' ? 'Blog & Yazılar' : 'Blog & Thoughts'}
         </h2>
         
-        <div className="space-y-4">
-          {posts && posts.length > 0 ? (
-            posts.map((post) => (
-              <div key={post.slug} className="group bg-neutral-800/30 hover:bg-neutral-800/60 transition-all rounded-2xl p-6 border border-neutral-700/30">
-                <h3 className="text-neutral-100 font-semibold text-lg mb-2">{post.title}</h3>
-                <p className="text-neutral-400 text-sm leading-relaxed line-clamp-3">
+        <div className="space-y-6">
+          {posts.length > 0 ? (
+            posts.map((post: any) => (
+              <div key={post.slug} className="group glass-panel hover-glow transition-all duration-300 rounded-2xl p-8">
+                <h3 className="text-neutral-100 font-bold text-lg mb-3 tracking-tight">{post.title}</h3>
+                <p className="text-neutral-400 text-sm leading-relaxed font-light line-clamp-3">
                   {post.content}
                 </p>
-                <div className="mt-4 text-xs font-bold uppercase tracking-widest text-neutral-500">
+                <div className="mt-6 text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">
                   {new Date(post.created_at).toLocaleDateString(params.lang === 'tr' ? 'tr-TR' : 'en-US')}
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-neutral-500 text-sm italic">
-              {params.lang === 'tr' ? 'Henüz içerik eklenmedi.' : 'No posts added yet.'}
-            </p>
+            <div className="glass-panel rounded-2xl p-8 flex items-center justify-center">
+              <p className="text-neutral-500 text-sm font-light">
+                {params.lang === 'tr' ? 'Henüz içerik eklenmedi.' : 'No posts added yet.'}
+              </p>
+            </div>
           )}
         </div>
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="scroll-mt-24">
-        <h2 className="text-neutral-100 text-xl font-bold tracking-tight mb-6 flex items-center gap-4">
-          <span className="w-8 h-px bg-neutral-600"></span>
+      <section id="projects" className="scroll-mt-32">
+        <h2 className="text-neutral-100 text-2xl font-bold tracking-tight mb-8 flex items-center gap-6">
+          <span className="w-12 h-[2px] bg-neutral-800"></span>
           {dict.projects.title}
         </h2>
         
-        <div className="space-y-4">
-          {dict.projects.items.map((project: { name: string; technologies: string[] }, index: number) => (
-            <div key={index} className="group bg-neutral-800/30 hover:bg-neutral-800/60 transition-all rounded-2xl p-6 border border-neutral-700/30">
-              <h3 className="text-neutral-100 font-semibold text-lg mb-5">{project.name}</h3>
+        <div className="space-y-6">
+          {projects.map((project: any, index: number) => (
+            <div key={index} className="group glass-panel hover-glow transition-all duration-300 rounded-2xl p-8">
+              <h3 className="text-neutral-100 font-bold text-lg mb-6 tracking-tight">{project.name}</h3>
               <div className="flex flex-wrap gap-2">
                 {project.technologies.map((tech: string) => (
-                  <span key={tech} className="px-3 py-1 bg-neutral-900/80 text-neutral-300 text-xs font-semibold rounded-full border border-neutral-700/50 shadow-sm">
+                  <span key={tech} className="px-3 py-1 bg-white/5 text-neutral-300 text-[11px] font-medium tracking-wide rounded border border-white/5 shadow-sm">
                     {tech}
                   </span>
                 ))}
