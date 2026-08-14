@@ -35,14 +35,14 @@ export async function createPost(formData: FormData) {
 
   if (error) {
     console.error('Error inserting post:', error)
-    return { error: error.message }
+    return
   }
 
   // Revalidate frontend pages (ISR update)
   revalidatePath('/en')
   revalidatePath('/tr')
 
-  return { success: true }
+  return
 }
 
 export async function uploadCV(formData: FormData) {
@@ -50,7 +50,7 @@ export async function uploadCV(formData: FormData) {
   const file = formData.get('file') as File
   
   if (!file) {
-    return { error: 'No file provided' }
+    return
   }
 
   // Upload to public-assets bucket, filename CV.pdf
@@ -63,10 +63,10 @@ export async function uploadCV(formData: FormData) {
 
   if (error) {
     console.error('Error uploading CV:', error)
-    return { error: error.message }
+    return
   }
 
-  return { success: true }
+  return
 }
 
 export async function logout() {
