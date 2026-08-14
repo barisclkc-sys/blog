@@ -40,6 +40,15 @@ export default async function RootLayout(props: {
     
   const cvUrl = cvData?.publicUrl || '#';
   
+  // Background Image
+  const { data: bgData } = supabaseStatic.storage
+    .from('public-assets')
+    .getPublicUrl('background.jpg');
+    
+  // To avoid heavy caching issues when updating the background, you can append a cache-buster if needed
+  // For simplicity, we just use the direct URL. Vercel cache is revalidated on action.
+  const bgUrl = bgData?.publicUrl || '';
+  
   const navItems = [
     { label: params.lang === 'tr' ? 'Ana Sayfa' : 'Home', href: `/${params.lang}`, external: false },
     { label: params.lang === 'tr' ? 'Deneyimler' : 'Experience', href: `/${params.lang}#experience`, external: false },
@@ -54,8 +63,14 @@ export default async function RootLayout(props: {
       className={`${geistSans.variable} ${geistMono.variable} antialiased scroll-smooth`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-neutral-50 text-neutral-900 dark:bg-[#0a0a0a] dark:text-neutral-300 font-sans selection:bg-neutral-800 selection:text-neutral-100">
+      <body className="min-h-screen bg-neutral-50 text-neutral-900 dark:bg-[#0a0a0a] dark:text-neutral-300 font-sans selection:bg-neutral-800 selection:text-neutral-100 relative">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          
+          {/* Background Image Layer */}
+          <div 
+            className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat opacity-40 dark:opacity-15 transition-opacity duration-500"
+            style={{ backgroundImage: `url(${bgUrl})` }}
+          />
           
           {/* Fixed Top Left Language Switcher & Theme Toggle */}
           <div className="fixed top-6 left-6 z-50 flex items-center gap-4">

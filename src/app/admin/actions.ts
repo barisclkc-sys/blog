@@ -71,6 +71,31 @@ export async function uploadCV(formData: FormData) {
   }
 }
 
+export async function uploadBackground(formData: FormData) {
+  const supabase = await createClient()
+  const file = formData.get('file') as File
+  
+  if (!file) {
+    return
+  }
+
+  const { error } = await supabase.storage
+    .from('public-assets')
+    .upload('background.jpg', file, {
+      cacheControl: '3600',
+      upsert: true
+    })
+
+  if (error) {
+    console.error('Error uploading background:', error)
+    return
+  }
+  
+  // Refresh layout pages to apply new background
+  revalidatePath('/en', 'layout')
+  revalidatePath('/tr', 'layout')
+}
+
 // --- CMS Actions ---
 
 export async function updateSiteSettings(formData: FormData) {

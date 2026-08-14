@@ -1,4 +1,4 @@
-import { createPost, uploadCV, updateSiteSettings, addExperience, addProject, deleteExperience, deleteProject, deletePost } from '../actions'
+import { createPost, uploadCV, uploadBackground, updateSiteSettings, addExperience, addProject, deleteExperience, deleteProject, deletePost } from '../actions'
 import { createClient } from '@/utils/supabase/server'
 import { Trash2 } from 'lucide-react'
 
@@ -227,6 +227,24 @@ export default async function DashboardPage() {
           </div>
           <button type="submit" className="bg-neutral-200 text-neutral-900 font-bold py-2 px-6 rounded hover:bg-white h-[42px]">
             Upload
+          </button>
+        </form>
+      </section>
+
+      {/* Background Uploader */}
+      <section className="bg-neutral-900 p-8 rounded-2xl border border-neutral-800 shadow-xl">
+        <h2 className="text-xl font-bold text-neutral-200 mb-6 flex items-center gap-3">
+          <span className="w-6 h-px bg-neutral-700"></span>
+          Upload Background Image
+        </h2>
+        <p className="text-sm text-neutral-400 mb-6">Upload a high-quality image (JPG, PNG) to set as the global background of your site.</p>
+        <form action={uploadBackground} className="flex flex-col sm:flex-row items-end gap-4">
+          <div className="flex-1 w-full">
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Select Image</label>
+            <input name="file" type="file" accept="image/jpeg, image/png, image/webp" required className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-1.5 text-neutral-200" />
+          </div>
+          <button type="submit" className="bg-neutral-200 text-neutral-900 font-bold py-2 px-6 rounded hover:bg-white h-[42px]">
+            Set Background
           </button>
         </form>
       </section>
