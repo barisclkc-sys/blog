@@ -59,11 +59,10 @@ export async function uploadCV(formData: FormData) {
   }
 
   const arrayBuffer = await file.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
 
   const { error } = await supabase.storage
     .from('public-assets')
-    .upload('CV.pdf', buffer, {
+    .upload('CV.pdf', arrayBuffer, {
       cacheControl: '3600',
       upsert: true,
       contentType: 'application/pdf'
@@ -84,11 +83,10 @@ export async function uploadBackground(formData: FormData) {
   }
 
   const arrayBuffer = await file.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
 
   const { error } = await supabase.storage
     .from('public-assets')
-    .upload('background.jpg', buffer, {
+    .upload('background.jpg', arrayBuffer, {
       cacheControl: '3600',
       upsert: true,
       contentType: file.type || 'image/jpeg'
